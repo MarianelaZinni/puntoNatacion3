@@ -129,5 +129,15 @@
         {{ $slot }}
 
         @fluxScripts
+
+        @push('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        if (!localStorage.getItem('theme')) {
+            localStorage.setItem('theme', 'light');
+        }
+    });
+</script>
+@endpush
     </body>
 </html>

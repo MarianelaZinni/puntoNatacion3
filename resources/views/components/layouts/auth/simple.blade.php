@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}"
+      x-data="{ theme: $persist('system') }"
+      x-bind:class="{ 'dark': theme === 'dark' }">
     <head>
         @include('partials.head')
     </head>
@@ -18,5 +20,14 @@
             </div>
         </div>
         @fluxScripts
+        @push('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            if (!localStorage.getItem('theme')) {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+    @endpush
     </body>
 </html>

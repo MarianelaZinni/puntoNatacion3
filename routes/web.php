@@ -1,11 +1,18 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
-    return view('welcome');
+    // Si el usuario está autenticado → redirigir al dashboard
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
+    // Si no está autenticado → redirigir al login
+    return redirect()->route('login');
 })->name('home');
 
 Route::view('dashboard', 'dashboard')
