@@ -55,10 +55,9 @@ class StudentsTable extends Component
         $students = Student::query()
             ->where('name', 'like', "%{$this->search}%")
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(10);
+            ->paginate(25);
 
-        return view('livewire.students-table', compact('students'))
-            ->layout('components.layouts.app');
+        return view('livewire.students-table', compact('students'));
     }
 }
 

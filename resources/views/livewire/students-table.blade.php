@@ -7,32 +7,84 @@
     <table class="table w-full">
         <thead>
             <tr>
-                <th wire:click="sortBy('id')" class="cursor-pointer">
-                    ID @if($sortField === 'id') ({{ strtoupper($sortDirection) }}) @endif
+                <th wire:click="sortBy('id')" class="cursor-pointer px-4 py-2 text-center">
+                    ID 
+                    @if($sortField === 'id')
+                        @if($sortDirection === 'asc')
+                            <x-heroicon-o-chevron-up class="inline w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        @else
+                            <x-heroicon-o-chevron-down class="inline w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        @endif
+                    @endif
                 </th>
-                <th wire:click="sortBy('dni')" class="cursor-pointer">
-                    DNI @if($sortField === 'dni') ({{ strtoupper($sortDirection) }}) @endif
+                <th wire:click="sortBy('dni')" class="cursor-pointer px-4 py-2 text-center">
+                    DNI  
+                    @if($sortField === 'dni')
+                        @if($sortDirection === 'asc')
+                            <x-heroicon-o-chevron-up class="inline w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        @else
+                            <x-heroicon-o-chevron-down class="inline w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        @endif
+                    @endif
                 </th>
-                <th>Nombre</th>
-                <th>Acciones</th>
+                 <th wire:click="sortBy('name')" class="cursor-pointer px-4 py-2 text-center">
+                    NOMBRE
+                @if($sortField === 'name')
+                    @if($sortDirection === 'asc')
+                            <x-heroicon-o-chevron-up class="inline w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        @else
+                            <x-heroicon-o-chevron-down class="inline w-4 h-4 text-gray-600 dark:text-gray-300" />
+                        @endif
+                    @endif
+                </th>
+                <th class = "px-4 py-2 text-center">ACCIONES</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($students as $s)
-            <tr>
-                <td>{{ $s->id }}</td>
-                <td>{{ $s->dni }}</td>
-                <td>{{ $s->name }}</td>
-                <td class="space-x-1">
-                    <button class="btn btn-xs" wire:click="openModal({{ $s->id }})">Ver</button>
-                    <button class="btn btn-xs btn-warning" wire:click="openModal({{ $s->id }})">Editar</button>
-                    <button class="btn btn-xs btn-error" wire:click="confirmDelete({{ $s->id }})">Eliminar</button>
-                    <button class="btn btn-xs btn-info">Inscribir</button>
-                    <button class="btn btn-xs btn-accent">Pagos</button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
+    @foreach($students as $s)
+        <tr>
+            <td class="px-4 py-2 text-center">{{ $s->id }}</td>
+            <td class="px-4 py-2 text-center">{{ $s->dni }}</td>
+            <td class="px-4 py-2 text-center">{{ $s->name }}</td>
+            <td class="px-4 py-2 text-center align-middle space-x-2">
+                {{-- Ver Detalle --}}
+                <x-heroicon-o-eye 
+                    wire:click="openModal({{ $s->id }})"
+                    class="inline w-5 h-5 text-blue-500 hover:text-blue-700 cursor-pointer"
+                    title="Ver Detalle"
+                />
+
+                {{-- Editar --}}
+                <x-heroicon-o-pencil 
+                    wire:click="openModal({{ $s->id }})"
+                    class="inline w-5 h-5 text-amber-500 hover:text-amber-700 cursor-pointer"
+                    title="Editar"
+                />
+
+                {{-- Eliminar --}}
+                <x-heroicon-o-trash 
+                    wire:click="confirmDelete({{ $s->id }})"
+                    class="inline w-5 h-5 text-red-500 hover:text-red-700 cursor-pointer"
+                    title="Eliminar"
+                />
+
+                {{-- Inscribir a Clase --}}
+                <x-heroicon-o-academic-cap 
+                    wire:click="openEnrollModal({{ $s->id }})"
+                    class="inline w-5 h-5 text-green-500 hover:text-green-700 cursor-pointer"
+                    title="Inscribir a Clase"
+                />
+
+                {{-- Registrar Pago --}}
+                <x-heroicon-o-banknotes 
+                    wire:click="openPaymentModal({{ $s->id }})"
+                    class="inline w-5 h-5 text-emerald-500 hover:text-emerald-700 cursor-pointer"
+                    title="Registrar Pago"
+                />
+            </td>
+        </tr>
+    @endforeach
+</tbody>
     </table>
 
     {{ $students->links() }}
