@@ -1,3 +1,3 @@
 <x-layouts.app>
-    <livewire:student-table />
+    <livewire:students-page />
 </x-layouts.app>

@@ -13,14 +13,8 @@ class StudentsTable extends Component
     public $search = '';
     public $sortField = 'id';
     public $sortDirection = 'asc';
-    public $showModal = false;
-    public $selectedStudentId = null;
 
-    protected $listeners = [
-        'studentUpdated' => '$refresh',
-        'delete' => 'delete',
-        'refreshTable' => '$refresh',
-    ];
+    protected $listeners = ['studentSaved' => '$refresh'];
 
     public function updatingSearch()
     {
@@ -37,21 +31,9 @@ class StudentsTable extends Component
         }
     }
 
-    public function openModal($id = null)
+    public function openForm($id = null)
     {
-        $this->selectedStudentId = $id;
-        $this->showModal = true;
-    }
-
-    public function confirmDelete($id)
-    {
-        $this->dispatchBrowserEvent('confirm-delete', ['id' => $id]);
-    }
-
-    public function delete($id)
-    {
-        Student::find($id)?->delete();
-        $this->dispatchBrowserEvent('notify', ['message' => 'Alumno eliminado correctamente']);
+        $this->dispatch('openStudentForm', $id);
     }
 
     public function render()
@@ -59,7 +41,7 @@ class StudentsTable extends Component
         $students = Student::query()
             ->where('name', 'like', "%{$this->search}%")
             ->orderBy($this->sortField, $this->sortDirection)
-            ->paginate(25);
+            ->paginate(10);
 
         return view('livewire.students-table', compact('students'));
     }

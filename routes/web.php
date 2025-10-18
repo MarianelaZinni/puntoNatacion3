@@ -1,8 +1,9 @@
 <?php
 
+use App\Livewire\StudentsPage;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Livewire\StudentsTable;
+use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
 
 Route::get('/', function () {
@@ -21,8 +22,7 @@ Route::middleware(['auth'])->group(function () {
 
     Volt::route('settings/profile', 'settings.profile')->name('profile.edit');
     Volt::route('settings/password', 'settings.password')->name('password.edit');
-    Route::get('/students', StudentsTable::class)->name('students.index');
+    Route::get('/students', StudentsPage::class)->name('students.index');
 });
-
 
 require __DIR__.'/auth.php';
