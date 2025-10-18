@@ -8,48 +8,27 @@ use App\Models\Student;
 class StudentForm extends Component
 {
     public $studentId;
-    public $name;
-    public $dni;
-    public $phone;
-    public $address;
+    public $student;
 
-    public function mount($studentId = null)
+    protected $rules = [
+        'student.name' => 'required|string|max:255',
+        'student.dni' => 'required|string|max:20',
+        'student.lastname' => 'nullable|string|max:255',
+        'student.phone' => 'nullable|string|max:50',
+        'student.address' => 'nullable|string|max:255',
+    ];
+
+    public function mount($studentId)
     {
-        if ($studentId) {
-            $student = Student::find($studentId);
-            if ($student) {
-                $this->studentId = $student->id;
-                $this->name = $student->name;
-                $this->dni = $student->dni;
-                $this->phone = $student->phone;
-                $this->address = $student->address;
-            }
-        }
+        $this->studentId = $studentId;
+        $this->student = Student::find($studentId);
     }
 
     public function save()
     {
-        $this->validate([
-            'name' => 'required|string|max:255',
-            'dni' => 'nullable|string|max:20',
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string|max:255',
-        ]);
-
-        Student::updateOrCreate(['id' => $this->studentId], [
-            'name' => $this->name,
-            'dni' => $this->dni,
-            'phone' => $this->phone,
-            'address' => $this->address,
-        ]);
-
-        $this->dispatch('studentSaved');
-        $this->dispatch('closeStudentForm');
-    }
-
-    public function close()
-    {
-        $this->dispatch('closeStudentForm');
+        $this->validate();
+        $this->student->save();
+        $this->emitUp('studentSaved');
     }
 
     public function render()

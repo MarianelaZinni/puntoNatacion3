@@ -3,32 +3,43 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use Livewire\WithPagination;
+use App\Models\Student;
 
 class StudentsPage extends Component
 {
-    public $showForm = false;
-    public $selectedStudentId = null;
+    use WithPagination;
 
-    protected $listeners = [
-        'openStudentForm' => 'openForm',
-        'closeStudentForm' => 'closeForm',
-        'studentSaved' => '$refresh',
-    ];
+    public $search = '';
+    public $selectedStudentId = null; // alumno seleccionado
+    public $showPanel = false;        // controla apertura del panel lateral
 
-    public function openForm($id = null)
+    protected $listeners = ['studentSaved' => '$refresh'];
+
+    public function updatingSearch()
     {
-        $this->selectedStudentId = $id;
-        $this->showForm = true;
+        $this->resetPage();
     }
 
-    public function closeForm()
+    public function selectStudent($id)
     {
-        $this->showForm = false;
+        $this->selectedStudentId = $id;
+        $this->showPanel = true;
+    }
+
+    public function closePanel()
+    {
+        $this->showPanel = false;
         $this->selectedStudentId = null;
     }
 
     public function render()
     {
-        return view('livewire.students-page');
+        $students = Student::query()
+            ->where('name', 'like', "%{$this->search}%")
+            ->orderBy('id', 'desc')
+            ->paginate(20);
+
+        return view('livewire.students-page', compact('students'));
     }
 }

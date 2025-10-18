@@ -1,33 +1,31 @@
-<div class="p-6 bg-white dark:bg-zinc-800 h-full border-l border-gray-200 dark:border-zinc-700">
-    <h2 class="text-lg font-semibold mb-4">
-        {{ $studentId ? 'Editar Alumno' : 'Nuevo Alumno' }}
-    </h2>
+<div class="p-4 bg-white dark:bg-zinc-800 h-full shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold">Editar Alumno</h2>
+        <button wire:click="$emitUp('closePanel')" class="text-gray-500 hover:text-gray-700">&times;</button>
+    </div>
 
     <form wire:submit.prevent="save" class="space-y-4">
         <div>
-            <label class="block text-sm font-medium">Nombre</label>
-            <input wire:model="name" type="text" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600">
-            @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+            <label>Nombre</label>
+            <input type="text" wire:model.defer="student.name" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
         </div>
-
         <div>
-            <label class="block text-sm font-medium">DNI</label>
-            <input wire:model="dni" type="text" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600">
+            <label>DNI</label>
+            <input type="text" wire:model.defer="student.dni" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
         </div>
-
         <div>
-            <label class="block text-sm font-medium">Teléfono</label>
-            <input wire:model="phone" type="text" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600">
+            <label>Apellido</label>
+            <input type="text" wire:model.defer="student.lastname" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
         </div>
-
         <div>
-            <label class="block text-sm font-medium">Dirección</label>
-            <input wire:model="address" type="text" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600">
+            <label>Teléfono</label>
+            <input type="text" wire:model.defer="student.phone" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+        </div>
+        <div>
+            <label>Dirección</label>
+            <input type="text" wire:model.defer="student.address" class="w-full border rounded px-3 py-2 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
         </div>
 
-        <div class="flex justify-end space-x-2 mt-4">
-            <button type="button" wire:click="close" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancelar</button>
-            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Guardar</button>
-        </div>
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Guardar</button>
     </form>
 </div>
