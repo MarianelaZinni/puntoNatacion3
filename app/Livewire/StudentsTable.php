@@ -16,7 +16,11 @@ class StudentsTable extends Component
     public $showModal = false;
     public $selectedStudentId = null;
 
-    protected $listeners = ['studentUpdated' => '$refresh'];
+    protected $listeners = [
+        'studentUpdated' => '$refresh',
+        'delete' => 'delete',
+        'refreshTable' => '$refresh',
+    ];
 
     public function updatingSearch()
     {
@@ -60,4 +64,3 @@ class StudentsTable extends Component
         return view('livewire.students-table', compact('students'));
     }
 }
-

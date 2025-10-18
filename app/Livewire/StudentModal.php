@@ -9,33 +9,42 @@ class StudentModal extends Component
 {
     public $studentId;
     public $student;
-    public $tab = 'info';
-    public $mode = 'view';
+    public $activeTab = 'detalle';
+    public $tabs = [
+        'detalle' => 'Detalle',
+        'clases' => 'Clases',
+        'pagos' => 'Pagos',
+    ];
 
-    public function mount($studentId = null)
+    protected $listeners = ['refreshStudentModal' => '$refresh'];
+
+    public function mount($studentId)
     {
-        $this->student = $studentId ? Student::with(['classes', 'payments'])->find($studentId) : new Student();
-        $this->mode = $studentId ? 'view' : 'create';
+        $this->studentId = $studentId;
+        $this->loadStudent();
     }
 
-    public function save()
+    public function loadStudent()
     {
-        $this->validate([
-            'student.firstname' => 'required|string|max:255',
-            'student.lastname'  => 'required|string|max:255',
-            'student.dni'       => 'required|string|max:20|unique:students,dni,' . $this->student->id,
-            'student.email'     => 'nullable|email',
-            'student.phone'     => 'nullable|string|max:20',
-        ]);
+        $this->student = Student::find($this->studentId);
+    }
 
-        $this->student->save();
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
 
-        $this->dispatch('studentUpdated');
-        $this->dispatchBrowserEvent('notify', ['message' => 'Alumno guardado correctamente']);
+    public function closeModal()
+    {
+        $this->emit('studentUpdated'); // refresca tabla padre
+        $this->dispatchBrowserEvent('close-modal');
     }
 
     public function render()
     {
-        return view('livewire.student-modal');
+        $classes = $this->activeTab === 'clases' ? $this->student->classes ?? [] : [];
+        $payments = $this->activeTab === 'pagos' ? $this->student->payments ?? [] : [];
+
+        return view('livewire.student-modal', compact('classes', 'payments'));
     }
 }

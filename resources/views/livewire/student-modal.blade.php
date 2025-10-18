@@ -1,75 +1,92 @@
-<div class="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-    <div class="bg-base-200 rounded-lg w-full max-w-3xl shadow-lg relative">
-        <div class="flex justify-between p-4 border-b">
-            <h3 class="font-bold text-lg">
-                @if($mode === 'create') Nuevo Alumno
-                @elseif($mode === 'edit') Editar Alumno
-                @else Ver Alumno
-                @endif
-            </h3>
-            <button class="btn btn-sm btn-ghost" wire:click="$parent.showModal = false">✕</button>
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white dark:bg-zinc-800 w-full max-w-3xl rounded-lg shadow-lg overflow-hidden">
+
+        {{-- Header --}}
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-zinc-700">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
+                @if($student) {{ $student->name }} @endif
+            </h2>
+            <button wire:click="closeModal" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">&times;</button>
         </div>
 
-        <div class="tabs tabs-bordered px-4">
-            <a class="tab {{ $tab==='info'?'tab-active':'' }}" wire:click="$set('tab', 'info')">Datos</a>
-            <a class="tab {{ $tab==='classes'?'tab-active':'' }}" wire:click="$set('tab', 'classes')">Clases</a>
-            <a class="tab {{ $tab==='payments'?'tab-active':'' }}" wire:click="$set('tab', 'payments')">Pagos</a>
+        {{-- Tabs --}}
+        <div class="flex border-b border-gray-200 dark:border-zinc-700">
+            @foreach($tabs as $key => $label)
+                <button wire:click="setTab('{{ $key }}')" 
+                        class="px-4 py-2 -mb-px font-medium border-b-2"
+                        :class="$activeTab === '{{ $key }}' ? 'border-blue-500 text-blue-600 dark:text-blue-400' : 'border-transparent text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white'">
+                    {{ $label }}
+                </button>
+            @endforeach
         </div>
 
-        <div class="p-4">
-            @if ($tab === 'info')
-                <form wire:submit.prevent="save" class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="label">Nombre</label>
-                        <input type="text" class="input input-bordered w-full" wire:model="student.firstname" {{ $mode==='view'?'readonly':'' }}>
-                        @error('student.firstname') <span class="text-error text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="label">Apellido</label>
-                        <input type="text" class="input input-bordered w-full" wire:model="student.lastname" {{ $mode==='view'?'readonly':'' }}>
-                        @error('student.lastname') <span class="text-error text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="label">DNI</label>
-                        <input type="text" class="input input-bordered w-full" wire:model="student.dni" {{ $mode==='view'?'readonly':'' }}>
-                        @error('student.dni') <span class="text-error text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="label">Email</label>
-                        <input type="email" class="input input-bordered w-full" wire:model="student.email" {{ $mode==='view'?'readonly':'' }}>
-                        @error('student.email') <span class="text-error text-sm">{{ $message }}</span> @enderror
-                    </div>
-                    <div>
-                        <label class="label">Teléfono</label>
-                        <input type="text" class="input input-bordered w-full" wire:model="student.phone" {{ $mode==='view'?'readonly':'' }}>
-                        @error('student.phone') <span class="text-error text-sm">{{ $message }}</span> @enderror
-                    </div>
+        {{-- Content --}}
+        <div class="p-4 max-h-[70vh] overflow-y-auto">
 
-                    @if ($mode !== 'view')
-                        <div class="col-span-2 text-right mt-4">
-                            <button class="btn btn-primary">Guardar</button>
-                        </div>
-                    @endif
-                </form>
-
-            @elseif ($tab === 'classes')
-                <ul>
-                    @forelse ($student->classes as $class)
-                        <li>{{ $class->name }} ({{ $class->day }} - {{ $class->time }})</li>
-                    @empty
-                        <li>No hay clases registradas.</li>
-                    @endforelse
-                </ul>
-
-            @elseif ($tab === 'payments')
-                <ul>
-                    @forelse ($student->payments as $payment)
-                        <li>${{ $payment->amount }} - {{ $payment->created_at->format('d/m/Y') }}</li>
-                    @empty
-                        <li>No hay pagos registrados.</li>
-                    @endforelse
-                </ul>
+            {{-- Detalle --}}
+            @if($activeTab === 'detalle' && $student)
+                <div class="space-y-2">
+                    <p><strong>ID:</strong> {{ $student->id }}</p>
+                    <p><strong>DNI:</strong> {{ $student->dni }}</p>
+                    <p><strong>Nombre:</strong> {{ $student->name }}</p>
+                    <p><strong>Apellido:</strong> {{ $student->lastname }}</p>
+                    <p><strong>Teléfono:</strong> {{ $student->phone }}</p>
+                    <p><strong>Dirección:</strong> {{ $student->address }}</p>
+                </div>
             @endif
+
+            {{-- Clases --}}
+            @if($activeTab === 'clases')
+                @if(count($classes))
+                    <table class="min-w-full border border-gray-200 dark:border-zinc-600">
+                        <thead class="bg-gray-100 dark:bg-zinc-700">
+                            <tr>
+                                <th class="px-4 py-2 text-center">ID</th>
+                                <th class="px-4 py-2 text-center">Nombre Clase</th>
+                                <th class="px-4 py-2 text-center">Horario</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-zinc-600">
+                            @foreach($classes as $c)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-zinc-600">
+                                    <td class="px-4 py-2 text-center">{{ $c->id }}</td>
+                                    <td class="px-4 py-2 text-center">{{ $c->name }}</td>
+                                    <td class="px-4 py-2 text-center">{{ $c->schedule }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p class="text-gray-600 dark:text-gray-300">No hay clases registradas</p>
+                @endif
+            @endif
+
+            {{-- Pagos --}}
+            @if($activeTab === 'pagos')
+                @if(count($payments))
+                    <table class="min-w-full border border-gray-200 dark:border-zinc-600">
+                        <thead class="bg-gray-100 dark:bg-zinc-700">
+                            <tr>
+                                <th class="px-4 py-2 text-center">ID</th>
+                                <th class="px-4 py-2 text-center">Monto</th>
+                                <th class="px-4 py-2 text-center">Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200 dark:divide-zinc-600">
+                            @foreach($payments as $p)
+                                <tr class="hover:bg-gray-50 dark:hover:bg-zinc-600">
+                                    <td class="px-4 py-2 text-center">{{ $p->id }}</td>
+                                    <td class="px-4 py-2 text-center">{{ $p->amount }}</td>
+                                    <td class="px-4 py-2 text-center">{{ $p->created_at->format('d/m/Y') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p class="text-gray-600 dark:text-gray-300">No hay pagos registrados</p>
+                @endif
+            @endif
+
         </div>
     </div>
 </div>
